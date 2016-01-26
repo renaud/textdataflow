@@ -9,7 +9,7 @@ Simplifications over UIMA
 * only Maven for packaging
 * no support for C++ or other runtimes
 
-Example
+Example Pipeline (LocalFlow)
 
         Pipeline p = Pipeline.create(PipelineOptionsFactory.create());
 
@@ -24,7 +24,35 @@ Example
         ;
         p.run();
 
+Example Transformer (Tokenize.NAIVE_WORD_TOKENIZER)
 
+    public static class NaiveWordTokenizerFn extends DoFn<ADoc, ADoc> {
+
+        private static Pattern tokenizationPattern = Pattern.compile("(?<=\\w)(?=\\W)|(?<=\\W)(?=\\w)");
+
+        @Override
+        public void processElement(ProcessContext c) {
+
+            ADoc doc =  new ADoc(c.element());
+
+            for (TAnnotation sentence : doc.getAnnotations(SENTENCE)) {
+
+                int start = sentence.getBegin();
+                String text = sentence.getText(doc);
+                if (text.endsWith("."))// remove trailing dot
+                    text = text.substring(0, text.length() - 1);
+
+                for (String word : tokenizationPattern.split(text)) {
+                    if (!word.equals(" ")) {
+                        doc.add(new TAnnotation(TOKEN, start,
+                                start + word.length()));
+                    }
+                    start += word.length();
+                }
+            }
+            c.output(doc);
+        }
+    }
 
 Future plans
 
