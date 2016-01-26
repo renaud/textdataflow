@@ -25,8 +25,15 @@ public class ADoc {
     public ADoc(String text) {
         this.text = text;
     }
+    public ADoc(ADoc doc) {
+        this.text = doc.text;
+        for (TAnnotation a : doc.annotations) {
+            this.annotations.add(a);
+        }        
+    }
 
     // TEXT
+
 
     public String getText() {
         return text;

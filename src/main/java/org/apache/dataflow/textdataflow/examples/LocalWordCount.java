@@ -39,7 +39,7 @@ public class LocalWordCount {
                                 return input.getKey() + ": " + input.getValue();
                             }
                         }))
-                .apply(TextIO.Write.to("src/test/resources/alice.txt"));
+                .apply(TextIO.Write.to("src/test/resources/alice_LocalWordCount.txt"));
 
         p.run();
     }

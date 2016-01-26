@@ -32,17 +32,17 @@ public class Tokenize {
         @Override
         public void processElement(ProcessContext c) {
 
-            ADoc doc = c.element();
+            ADoc doc = new ADoc(c.element());
             final String text = doc.getText();
 
             if (text.indexOf('.') == -1) {// no dots, return whole sentence
-                doc.add(new TAnnotation(doc, SENTENCE, 0, text.length()));
+                doc.add(new TAnnotation(SENTENCE, 0, text.length()));
 
             } else {
                 int i = 0;
                 for (String dotSpaceSplit : text.split("\\. ")) {
                     for (String sentenceText : dotSpaceSplit.split("\\.")) {
-                        doc.add(new TAnnotation(doc, SENTENCE, i, //
+                        doc.add(new TAnnotation(SENTENCE, i, //
                                 // to account for last sentence not having a dot
                                 min(text.length(),
                                         i + sentenceText.length() + 1)));
@@ -69,25 +69,25 @@ public class Tokenize {
         /** Splits on any punctuation character, except dashes, @see tests */
         public static final String patterPunctuationNoDash = "(?<=[(a-zA-Z_0-9\\-)])(?=[^(a-zA-Z_0-9\\-)])|(?<=[^(a-zA-Z_0-9\\-)])(?=[(a-zA-Z_0-9\\-)])";
 
-        // TODO add config
+        // LATER add config
         private static Pattern tokenizationPattern = Pattern
                 .compile(patterPunctuationNoDash);
 
         @Override
         public void processElement(ProcessContext c) {
 
-            ADoc doc = c.element();
+            ADoc doc =  new ADoc(c.element());
 
             for (TAnnotation sentence : doc.getAnnotations(SENTENCE)) {
 
                 int start = sentence.getBegin();
-                String text = sentence.getText();
+                String text = sentence.getText(doc);
                 if (text.endsWith("."))// remove trailing dot
                     text = text.substring(0, text.length() - 1);
 
                 for (String word : tokenizationPattern.split(text)) {
                     if (!word.equals(" ")) {
-                        doc.add(new TAnnotation(doc, TOKEN, start,
+                        doc.add(new TAnnotation(TOKEN, start,
                                 start + word.length()));
                     }
                     start += word.length();

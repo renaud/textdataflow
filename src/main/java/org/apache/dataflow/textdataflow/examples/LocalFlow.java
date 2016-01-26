@@ -1,6 +1,7 @@
 package org.apache.dataflow.textdataflow.examples;
 
 import org.apache.dataflow.textdataflow.doc.ADoc;
+import org.apache.dataflow.textdataflow.doc.TAnnotation;
 import org.apache.dataflow.textdataflow.transforms.Tokenize;
 import org.apache.dataflow.textdataflow.transforms.Tokenize.Text2ADoc;
 
@@ -16,23 +17,26 @@ public class LocalFlow {
 
     public static void main(String[] args) {
 
-        PipelineOptions options = PipelineOptionsFactory.create();
-        Pipeline p = Pipeline.create(options);
+        Pipeline p = Pipeline.create(PipelineOptionsFactory.create());
 
-        p.apply(TextIO.Read.from("src/test/resources/alice.txt"))//
+        p.apply(TextIO.Read.from("src/test/resources/alice_oneline.txt"))//
 
-                .apply(ParDo.named("ExtractWords").of(new Text2ADoc()))//
+                .apply(Tokenize.TEXT2DOC)//
 
                 .apply(Tokenize.NAIVE_SENTENCE_TOKENIZER)//
-               // .apply(Tokenize.NAIVE_WORD_TOKENIZER)//
+                .apply(Tokenize.NAIVE_WORD_TOKENIZER)//
 
                 .apply("FormatResults",
                         MapElements.via(new SimpleFunction<ADoc, String>() {
                             @Override
                             public String apply(ADoc input) {
-//                                return input.getAnnotations(Tokenize.TOKEN)
-//                                        .get(2).toString();
-                                return input.getText();
+                                String out = "";
+                                for (TAnnotation s : input
+                                        .getAnnotations(Tokenize.SENTENCE)) {
+                                    out += "[" + s.getText(input) + "]\n";
+                                }
+
+                                return out;
                             }
                         }))
                 .apply(TextIO.Write.to("src/test/resources/LocalFlow.txt"));

@@ -1,5 +1,6 @@
 package org.apache.dataflow.textdataflow.doc;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.cloud.dataflow.sdk.coders.AvroCoder;
@@ -10,19 +11,14 @@ public class TAnnotation {
     public static final String DEFAULT_TYPE = "annotation";
 
     private int begin, end;
-    private final ADoc doc;
     private String type;
-    private Map<String, Object> meta;
+    private Map<String, Object> meta = new HashMap<>();
 
-    
-    
-    public TAnnotation(ADoc doc) {
-        this.doc = doc;
+    public TAnnotation() {
         setType(DEFAULT_TYPE);
     }
 
-    public TAnnotation(ADoc doc, String type, int begin, int end) {
-        this.doc = doc;
+    public TAnnotation(String type, int begin, int end) {
         this.type = type;
         this.begin = begin;
         this.end = end;
@@ -65,7 +61,7 @@ public class TAnnotation {
 
     // TEXT (get only)
 
-    public String getText() {
+    public String getText(ADoc doc) {
         return doc.getText().substring(begin, end);
     }
 
@@ -84,6 +80,6 @@ public class TAnnotation {
 
     @Override
     public String toString() {
-        return "[" + type + "]" + getText();
+        return type + "[" + begin + ":" + end + "]";
     }
 }
