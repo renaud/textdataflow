@@ -1,0 +1,38 @@
+
+
+# Eclipse         #
+###################
+.project
+.metadata
+*.tmp
+local.properties
+.classpath
+.settings/
+.loadpath
+.cache
+target/**
+*/*/target
+git.properties
+
+# Compiled source #
+###################
+*.class
+*.o
+*.so
+
+
+# Logs and databases #
+######################
+*.log
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.d
+
